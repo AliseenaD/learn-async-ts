@@ -2,3 +2,40 @@
 - Is there a difference in the flow of execution from when the code was in the setTimeout function?
 - Is the flow of execution in both these examples different from the flow of execution with the examples using the fetch() API, which also returns a promise? 
 - If yes, explain the code execution difference. Add your explanation to this file.
+
+- Yes, there is a difference because the setTimeout function introduces a slight delay, which is why we see the next console log first
+- before the summation occurs. This is because the setTimeout schedules the addition operations to occur one subsequent cycles, while
+- they happen synchronously without the timeout. The flow in these examples are different than that of the API as the fetch will not resolve
+- until it receives a network response, and thus are considered true asynchronous operations. 
+
+- FOR REFERENCE (since we were supposed to update promise-sum-2darray again to make it async and await), I have
+- copied the code using promise.all here as well:
+
+// Create a promise for each row
+const sumRow = (row:number): Promise<number> => {
+    let sum = 0
+    return new Promise<number>((resolve, reject) => {
+        setTimeout(() => {
+            if (row < array2D_1.length) {
+                for (let i=0; i<array2D_1[row].length; i++) {
+                    sum += array2D_1[row][i]
+                }
+                resolve(sum);
+            }
+            else {
+                reject('Row index must be valid');
+            }
+        }, 0);
+    });
+};
+
+// Sum up every row with a promise and then total the sums
+Promise.all([sumRow(0), sumRow(1), sumRow(2)]).then((results: number[]) => {
+    let total = 0
+    for (const num of results) {
+        total += num;
+    }
+    console.log(total);
+}).catch((error) => {
+    console.error(`Failed to calculate: ${error}`);
+});
